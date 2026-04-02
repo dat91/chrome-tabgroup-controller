@@ -54,6 +54,7 @@ wss.on('connection', (socket) => {
   });
 
   socket.on('close', () => {
+    if (extensionSocket !== socket) return; // stale socket — ignore
     console.log('🔴 Extension disconnected');
     extensionSocket = null;
     // Fail pending requests immediately rather than waiting for the 10s timeout
