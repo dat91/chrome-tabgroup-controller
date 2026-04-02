@@ -15,7 +15,7 @@ function connect() {
 
   ws.onopen = () => {
     console.log('[Offscreen] Connected to WebSocket server');
-    ws.send(JSON.stringify({ event: 'connected', version: chrome.runtime.getManifest().version }));
+    ws.send(JSON.stringify({ event: 'connected', version: chrome.runtime?.getManifest?.()?.version ?? 'unknown' }));
   };
 
   ws.onmessage = (event) => {

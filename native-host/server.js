@@ -39,7 +39,7 @@ wss.on('connection', (socket) => {
     try { msg = JSON.parse(raw); } catch { return; }
 
     if (msg.event === 'connected') {
-      console.log(`✅ Chrome extension connected (v${msg.version})\n`);
+      console.log(`✅ Chrome extension connected (v${msg.version ?? 'unknown'})\n`);
       return;
     }
 
