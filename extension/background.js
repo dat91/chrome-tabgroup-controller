@@ -1,68 +1,39 @@
 // Tab Group Controller - Background Service Worker
-// Connects to local WebSocket server and exposes chrome.tabGroups API
+// Creates and maintains the offscreen document that holds the WebSocket connection.
+// Handles chrome.tabGroups/tabs API calls on behalf of the offscreen document.
 
-const WS_URL = 'ws://localhost:9876';
-let ws = null;
-let reconnectTimer = null;
+let creatingOffscreen = null;
 
-function connect() {
-  // Don't spawn a new socket if one is already open or connecting
-  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
-    return;
-  }
+async function ensureOffscreenDocument() {
+  if (creatingOffscreen) return creatingOffscreen;
+  const existing = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT'],
+  });
+  if (existing.length > 0) return;
 
-  clearTimeout(reconnectTimer);
-  reconnectTimer = null;
+  creatingOffscreen = chrome.offscreen.createDocument({
+    url: chrome.runtime.getURL('offscreen.html'),
+    reasons: ['BLOBS'],
+    justification: 'Maintain persistent WebSocket connection to local bridge server',
+  }).finally(() => { creatingOffscreen = null; });
 
-  try {
-    ws = new WebSocket(WS_URL);
-
-    ws.onopen = () => {
-      console.log('[TabGroupController] Connected to WebSocket server');
-      sendResponse({ event: 'connected', version: chrome.runtime.getManifest().version });
-    };
-
-    ws.onmessage = async (event) => {
-      // Capture socket ref now — ws may be reassigned by the time handleCommand resolves
-      const socket = ws;
-      let msg;
-      try {
-        msg = JSON.parse(event.data);
-      } catch (e) {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify({ id: null, error: 'Invalid JSON' }));
-        }
-        return;
-      }
-      const result = await handleCommand(msg);
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ id: msg.id, ...result }));
-      }
-    };
-
-    ws.onclose = () => {
-      console.log('[TabGroupController] Disconnected. Reconnecting in 3s...');
-      ws = null;
-      clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connect, 3000);
-    };
-
-    ws.onerror = (err) => {
-      console.error('[TabGroupController] WebSocket error:', err);
-      // onclose fires after onerror and handles reconnect
-    };
-  } catch (e) {
-    console.error('[TabGroupController] Connection error:', e);
-    clearTimeout(reconnectTimer);
-    reconnectTimer = setTimeout(connect, 3000);
-  }
+  return creatingOffscreen;
 }
 
-function sendResponse(data) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(data));
-  }
-}
+chrome.runtime.onInstalled.addListener(() => ensureOffscreenDocument());
+chrome.runtime.onStartup.addListener(() => ensureOffscreenDocument());
+
+// Also ensure it exists when the service worker first loads (e.g. after reload/update)
+ensureOffscreenDocument();
+
+// Handle commands forwarded from the offscreen WebSocket document
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type !== 'ws-command') return;
+  const { msg } = message;
+  handleCommand(msg).then(result => {
+    chrome.runtime.sendMessage({ type: 'ws-send', payload: { id: msg.id, ...result } });
+  });
+});
 
 async function handleCommand({ cmd, params = {} }) {
   try {
@@ -91,7 +62,6 @@ async function handleCommand({ cmd, params = {} }) {
       }
 
       case 'groups.create': {
-        // Create tabs if URLs provided, then group them
         let tabIds = params.tabIds || [];
         if (params.urls && params.urls.length > 0) {
           const createdTabs = await Promise.all(
@@ -119,7 +89,6 @@ async function handleCommand({ cmd, params = {} }) {
       }
 
       case 'groups.dissolve': {
-        // Ungroup all tabs in a group
         const tabs = await chrome.tabs.query({ groupId: params.groupId });
         await chrome.tabs.ungroup(tabs.map(t => t.id));
         return { data: { dissolved: true, tabCount: tabs.length } };
@@ -167,14 +136,13 @@ async function handleCommand({ cmd, params = {} }) {
           chrome.tabs.query({}),
           chrome.tabGroups.query({})
         ]);
-        // Attach tabs to their groups
         const groupMap = {};
         for (const g of groups) {
           groupMap[g.id] = { ...g, tabs: [] };
         }
         const ungrouped = [];
         for (const t of tabs) {
-          const entry = { id: t.id, title: t.title, url: t.url, active: t.active };
+          const entry = { id: t.id, title: t.title, url: t.url, active: t.active, lastAccessed: t.lastAccessed };
           if (t.groupId && t.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
             if (groupMap[t.groupId]) groupMap[t.groupId].tabs.push(entry);
           } else {
@@ -191,27 +159,3 @@ async function handleCommand({ cmd, params = {} }) {
     return { error: e.message };
   }
 }
-
-// ── SERVICE WORKER KEEPALIVE (MV3) ───────────────────────────────────────────
-// Chrome suspends idle MV3 service workers, clearing all setTimeout timers.
-// chrome.alarms wakes the SW periodically so it can reconnect if needed.
-
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create('ws-keepalive', { periodInMinutes: 1 });
-  connect();
-});
-
-chrome.runtime.onStartup.addListener(() => {
-  connect();
-});
-
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'ws-keepalive') {
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      connect();
-    }
-  }
-});
-
-// Start connection
-connect();
