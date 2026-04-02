@@ -14,6 +14,15 @@ const PORT = parseInt(process.argv.find(a => a.startsWith('--port='))?.split('='
 
 const wss = new WebSocketServer({ port: PORT });
 let extensionSocket = null;
+
+wss.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`⚠️  Port ${PORT} already in use. Kill the existing server.js process first.`);
+    console.error('   MCP tools will still be registered but tool calls will fail until port is free.');
+  } else {
+    console.error('WebSocket server error:', err.message);
+  }
+});
 let pendingRequests = new Map(); // id -> { resolve, reject, timeout }
 let msgId = 0;
 
