@@ -63,6 +63,15 @@ Commands sent over WebSocket follow the pattern `{ id, cmd, params }`. The exten
 
 **15 MCP tools:** `tab_snapshot`, `tab_groups_list`, `tab_group_get`, `tab_group_create`, `tab_group_update`, `tab_group_collapse`, `tab_group_expand`, `tab_group_dissolve`, `tab_group_move`, `tabs_list`, `tabs_add_to_group`, `tabs_remove_from_group`, `tab_open`, `tabs_close`, `tab_activate`
 
+**4 MCP prompt templates** (tab grouping strategies): available as slash commands in **Claude Code CLI only** — Claude Desktop does not support MCP prompts.
+
+```
+/mcp__chrome-tabs__group_by_intent        — intent-based clustering (two-pass)
+/mcp__chrome-tabs__group_by_context       — context-aware (requires user_context arg)
+/mcp__chrome-tabs__group_with_priority    — priority + suggested action per group
+/mcp__chrome-tabs__group_by_domain_graph  — graph-based similarity clustering
+```
+
 **Configuration** is in `.claude/settings.json` (project-level) for Claude Code. For Claude Chat Desktop, add the same `mcpServers` entry to `~/Library/Application Support/Claude/claude_desktop_config.json`.
 
 **Important:** The MCP server starts the WebSocket server internally — do not run `server.js` separately when using the MCP server. If port 9876 is already occupied by a standalone `server.js` process, `mcp-server.js` will fail to bind the port and MCP tool calls will return "Extension not connected". Kill any pre-existing `node server.js` process before starting a Claude Code session.
