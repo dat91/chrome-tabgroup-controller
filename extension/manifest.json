@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Group Controller",
+  "version": "1.0.0",
+  "description": "WebSocket bridge to control Chrome tab groups programmatically",
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "alarms"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tab Group Controller"
+  }
+}
