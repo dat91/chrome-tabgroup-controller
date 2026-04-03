@@ -1,6 +1,10 @@
 ---
 name: tab-group-by-intent
-description: Organise Chrome tabs into groups by inferred user intent — two-pass clustering that figures out what you were trying to accomplish (not just what the content is about), then names groups from those goals. Use this skill whenever the user asks to group, organise, sort, or tidy Chrome tabs, or says things like "clean up my tabs", "group my tabs", "organise tabs by intent/goal/purpose", or "cluster my open tabs".
+description: Group Chrome tabs by inferred user intent — two-pass: infer goals first, then name groups. Use when user says "group my tabs", "clean up my tabs", "organise tabs by goal/purpose/intent", or wants tabs tidied without providing specific context.
+disable-model-invocation: true
+allowed-tools:
+  - mcp__chrome-tabs__tab_snapshot
+  - mcp__chrome-tabs__tab_group_create
 ---
 
 # Tab Grouping — Intent-Based Clustering

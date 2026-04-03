@@ -1,6 +1,10 @@
 ---
 name: tab-group-by-domain
-description: Organise Chrome tabs into groups using graph-based similarity clustering — builds a tab similarity graph from domain, URL, and title signals, then groups by community detection. Use this skill when the user asks to group tabs by domain, similarity, or URL patterns, or says things like "group tabs by site", "cluster similar tabs", "group tabs that are related", "organise by domain", or when they want an objective/structural grouping rather than intent-based.
+description: Group Chrome tabs by domain and URL similarity using graph-based clustering. Use when user says "group tabs by site", "cluster similar tabs", "organise by domain", or wants structural (not intent-based) grouping.
+disable-model-invocation: true
+allowed-tools:
+  - mcp__chrome-tabs__tab_snapshot
+  - mcp__chrome-tabs__tab_group_create
 ---
 
 # Tab Grouping — Graph-Based Domain/Similarity Clustering

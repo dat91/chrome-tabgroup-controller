@@ -1,6 +1,11 @@
 ---
 name: tab-group-with-priority
-description: Organise Chrome tabs into groups with priority levels (active/background/archive) and suggested actions (keep/close/bookmark) — useful when the user wants to not just group but also triage and declutter their browser. Use this skill when the user asks to group tabs with priority, triage tabs, clean up tabs, close stale tabs, or says things like "group my tabs and tell me what to close", "organise tabs by priority", "help me declutter my browser", or "which tabs should I keep".
+description: Group Chrome tabs with priority tiers (active/background/archive) and suggested actions (keep/close/bookmark). Use when user wants to triage tabs, says "group by priority", "help me declutter", or "which tabs should I close".
+disable-model-invocation: true
+allowed-tools:
+  - mcp__chrome-tabs__tab_snapshot
+  - mcp__chrome-tabs__tab_group_create
+  - mcp__chrome-tabs__tabs_close
 ---
 
 # Tab Grouping — Priority-Aware
