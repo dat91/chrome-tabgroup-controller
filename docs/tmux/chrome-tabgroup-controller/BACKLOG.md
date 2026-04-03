@@ -31,6 +31,8 @@
 
 ## Done
 
+- **[P1-007] Add manual skill install guide** — commit 3d72733. Step 6 in INSTALL.md: cp skills to ~/.claude/skills/, no-namespace slash commands, MCP still needed separately, Claude Code only.
+- **[P1-006] Fix 4 skills to follow best practices** — commit 329b1f7. All 4 skills: disable-model-invocation:true, descriptions <250 chars, allowed-tools. tab-group-by-context: $ARGUMENTS + argument-hint.
 - **[P1-005] Fix docs: client terminology and hierarchy** — commit 5235c1d. Two clients only: Claude Desktop (primary, chat app) + Claude Code CLI (secondary). Removed Claude Code Desktop GUI section. Skills correctly scoped to CLI only.
 - **[P1-004] Fix port 9876 not released on quit** — commit c773ab4. Added shutdown() to server.js (wss.close() + socket terminate), registered SIGTERM/SIGINT handlers in mcp-server.js. Verified port released after SIGTERM.
 - **[P1-003] Write installation guide** — commit 58b85be. docs/INSTALL.md (191 lines): Chrome extension setup, Claude Desktop MCP config (primary), Claude Code CLI plugin (secondary), troubleshooting.
