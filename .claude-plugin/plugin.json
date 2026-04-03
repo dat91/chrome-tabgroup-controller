@@ -1,0 +1,8 @@
+{
+  "name": "chrome-tabgroup-controller",
+  "version": "1.0.0",
+  "description": "Programmatic Chrome tab group control via WebSocket bridge",
+  "author": {
+    "name": "dat"
+  }
+}
