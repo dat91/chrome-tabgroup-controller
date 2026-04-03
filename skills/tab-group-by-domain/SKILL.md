@@ -1,7 +1,6 @@
 ---
 name: tab-group-by-domain
 description: Group Chrome tabs by domain and URL similarity using graph-based clustering. Use when user says "group tabs by site", "cluster similar tabs", "organise by domain", or wants structural (not intent-based) grouping.
-disable-model-invocation: true
 allowed-tools:
   - mcp__chrome-tabs__tab_snapshot
   - mcp__chrome-tabs__tab_group_create

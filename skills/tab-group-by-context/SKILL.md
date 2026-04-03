@@ -2,7 +2,6 @@
 name: tab-group-by-context
 description: Group Chrome tabs using your work context (role, project, sprint). Use when user says "group my tabs, I'm a backend engineer on a fintech sprint" or "organise tabs for my X project" or "group tabs based on what I'm working on".
 argument-hint: '[your role and current work context]'
-disable-model-invocation: true
 allowed-tools:
   - mcp__chrome-tabs__tab_snapshot
   - mcp__chrome-tabs__tab_group_create
