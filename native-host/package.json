@@ -1,0 +1,14 @@
+{
+  "name": "tab-group-controller-server",
+  "version": "1.0.0",
+  "description": "WebSocket bridge for Chrome tab group control",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "mcp": "node mcp-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "ws": "^8.18.0"
+  }
+}
