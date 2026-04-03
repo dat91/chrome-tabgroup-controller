@@ -31,6 +31,7 @@
 
 ## Done
 
+- **[P1-004] Fix port 9876 not released on quit** — commit c773ab4. Added shutdown() to server.js (wss.close() + socket terminate), registered SIGTERM/SIGINT handlers in mcp-server.js. Verified port released after SIGTERM.
 - **[P1-003] Write installation guide** — commit 58b85be. docs/INSTALL.md (191 lines): Chrome extension setup, Claude Desktop MCP config (primary), Claude Code CLI plugin (secondary), troubleshooting.
 - **[P1-002] Convert project to Claude Code plugin** — commit f83f881. Created .claude-plugin/plugin.json, .mcp.json, commands/, hooks/hooks.json + hook scripts. Skills already at root. Load with: claude --plugin-dir .
 - **[P1-001] Repository cleanup** — commits 59c5eaf, a73d55e, c84b87a. Deleted client_example.py, skills/, skills.zip. Committed popup UI, offscreen page, bridge alternative, package files, README, team docs, .claude commands. Repo is clean.
