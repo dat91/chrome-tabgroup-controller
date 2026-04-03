@@ -31,6 +31,7 @@
 
 ## Done
 
+- **[P1-008] Add skill-creator + product-selfknowledge to .claude/skills/** — local only (gitignored, no commit). skill-creator from official marketplace, product-selfknowledge created fresh.
 - **[P1-007] Add manual skill install guide** — commit 3d72733. Step 6 in INSTALL.md: cp skills to ~/.claude/skills/, no-namespace slash commands, MCP still needed separately, Claude Code only.
 - **[P1-006] Fix 4 skills to follow best practices** — commit 329b1f7. All 4 skills: disable-model-invocation:true, descriptions <250 chars, allowed-tools. tab-group-by-context: $ARGUMENTS + argument-hint.
 - **[P1-005] Fix docs: client terminology and hierarchy** — commit 5235c1d. Two clients only: Claude Desktop (primary, chat app) + Claude Code CLI (secondary). Removed Claude Code Desktop GUI section. Skills correctly scoped to CLI only.

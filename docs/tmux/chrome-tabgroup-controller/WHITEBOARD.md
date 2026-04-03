@@ -19,7 +19,7 @@
 ### Worker
 - **Status**: Idle
 - **Current Task**: None
-- **Last Report**: P1-007 DONE (commit 3d72733)
+- **Last Report**: P1-008 DONE (local only, no commit — .claude/ gitignored)
 - **Blockers**: None
 
 ---
