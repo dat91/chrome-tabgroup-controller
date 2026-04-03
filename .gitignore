@@ -27,6 +27,8 @@ Thumbs.db
 dist/
 build/
 
-# External skills (Claude Code skills — stored elsewhere)
-skills/
+# Local Claude Code config (personal, not project-specific)
+.claude/
+
+# Artifacts
 skills.zip

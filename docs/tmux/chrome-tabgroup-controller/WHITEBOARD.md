@@ -8,7 +8,7 @@
 
 ## Current Sprint Status
 
-**Status**: Active
+**Status**: Idle
 **Started**: 2026-04-03
 **Target Completion**: N/A
 
@@ -17,9 +17,9 @@
 ## Current Work
 
 ### Worker
-- **Status**: In Progress
-- **Current Task**: P1-001 — Repository cleanup (remove unused files, .gitignore, commit)
-- **Last Report**: P0-001 DONE (commit 1d27054)
+- **Status**: Idle
+- **Current Task**: None
+- **Last Report**: P1-001 DONE (commits 59c5eaf, a73d55e, c84b87a)
 - **Blockers**: None
 
 ---
