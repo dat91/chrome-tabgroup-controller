@@ -16,7 +16,14 @@ const _origLog = console.log;
 console.log = (...args) => console.error(...args);
 
 // Start WebSocket server + get TabGroups API
-const { TabGroups } = require('./server');
+const { TabGroups, shutdown } = require('./server');
+
+// Ensure WebSocket server is closed when Claude Desktop quits.
+// The MCP SDK's StdioServerTransport registers its own signal handlers which
+// override Node's default SIGTERM exit, leaving port 9876 bound. These handlers
+// run shutdown() first, then force exit.
+process.on('SIGTERM', () => { shutdown(); process.exit(0); });
+process.on('SIGINT',  () => { shutdown(); process.exit(0); });
 
 async function main() {
   const { McpServer } = await import('@modelcontextprotocol/sdk/server/mcp.js');

@@ -137,8 +137,18 @@ const TabGroups = {
   activateTab: (tabId) => send('tabs.activate', { tabId }),
 };
 
+// ── SHUTDOWN ─────────────────────────────────────────────────────────────────
+
+function shutdown() {
+  wss.close();
+  if (extensionSocket) {
+    extensionSocket.terminate();
+    extensionSocket = null;
+  }
+}
+
 // ── EXPORT for use as a module ───────────────────────────────────────────────
-module.exports = { TabGroups, send };
+module.exports = { TabGroups, send, shutdown };
 
 // ── INTERACTIVE REPL (when run directly) ────────────────────────────────────
 if (require.main === module) {
