@@ -50,9 +50,9 @@ The Chrome extension is the bridge between Claude and your tabs.
 
 ---
 
-## Step 4: Configure Claude Desktop
+## Step 4: Configure Claude Desktop (chat app)
 
-This is the primary integration. Claude Desktop communicates with the MCP server over stdio — no manual server startup needed.
+This is the primary integration. Claude Desktop (claude.ai chat app) communicates with the MCP server over stdio — no manual server startup needed.
 
 ### 4.1 Edit the Claude Desktop config
 
@@ -129,7 +129,7 @@ Quit Claude Desktop fully (`Cmd+Q`) and reopen it. The MCP server starts automat
 
 ## Step 5: Claude Code CLI (Alternative)
 
-> **Claude Desktop vs Claude Code CLI:** Claude Desktop requires the manual `mcpServers` config in Step 4. Claude Code CLI users can skip that entirely — the plugin handles it automatically.
+> **Claude Desktop vs Claude Code CLI:** Claude Desktop requires the manual `mcpServers` config in Step 4. Claude Code CLI users can skip Step 4 entirely — the plugin handles MCP configuration automatically.
 
 This repo is a Claude Code plugin (`.claude-plugin/plugin.json`). Load it with:
 
@@ -139,7 +139,7 @@ claude --plugin-dir /path/to/chrome-tabgroup-controller
 
 The plugin's `.mcp.json` auto-starts the MCP server when the session begins — **no edits to any config file needed**. All 15 MCP tools are available immediately.
 
-You also get 4 tab grouping skills as namespaced slash commands (Claude Code CLI only):
+You also get 4 tab grouping skills as namespaced slash commands:
 
 | Slash command | Description |
 |---------------|-------------|
@@ -148,7 +148,7 @@ You also get 4 tab grouping skills as namespaced slash commands (Claude Code CLI
 | `/chrome-tabgroup-controller:tab-group-with-priority` | Groups with active/background/archive tiers |
 | `/chrome-tabgroup-controller:tab-group-by-domain` | Graph-based domain similarity clustering |
 
-> Skills (slash commands) are only available in Claude Code CLI — not Claude Desktop.
+> Skills (slash commands) are only available in Claude Code CLI — not in Claude Desktop (chat app).
 
 ---
 

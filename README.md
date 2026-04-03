@@ -23,7 +23,13 @@ The MCP server starts automatically when Claude Desktop or Claude Code launches 
 See **[docs/INSTALL.md](docs/INSTALL.md)** for the full step-by-step guide. The short version:
 
 1. Load the Chrome extension (unpacked) from `extension/` via `chrome://extensions`
-2. Add the MCP server to your Claude Desktop config:
+2. Connect your Claude client (pick one below)
+
+---
+
+## Claude Desktop (chat app)
+
+The primary integration. Add the MCP server to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -36,26 +42,19 @@ See **[docs/INSTALL.md](docs/INSTALL.md)** for the full step-by-step guide. The 
 }
 ```
 
-3. Restart Claude Desktop — tools are available immediately
+Restart Claude Desktop — all 15 MCP tools are available immediately.
 
 ---
 
 ## Claude Code CLI
 
-This repo is a Claude Code plugin (`.claude-plugin/plugin.json`). Load it locally with:
+This repo is a Claude Code plugin (`.claude-plugin/plugin.json`). Load it with:
 
 ```bash
 claude --plugin-dir /path/to/chrome-tabgroup-controller
 ```
 
-The plugin's `.mcp.json` auto-starts the MCP server — **no manual `mcpServers` config needed**. The same 15 MCP tools are available immediately, plus 4 tab grouping skills as namespaced slash commands:
-
-| Skill | Slash command |
-|-------|--------------|
-| By Intent | `/chrome-tabgroup-controller:tab-group-by-intent` |
-| By Context | `/chrome-tabgroup-controller:tab-group-by-context` |
-| With Priority | `/chrome-tabgroup-controller:tab-group-with-priority` |
-| By Domain | `/chrome-tabgroup-controller:tab-group-by-domain` |
+The plugin's `.mcp.json` auto-starts the MCP server — **no manual config needed**. All 15 MCP tools are available immediately, plus 4 tab grouping skills as slash commands.
 
 ---
 
@@ -85,7 +84,7 @@ The plugin's `.mcp.json` auto-starts the MCP server — **no manual `mcpServers`
 
 ## Skills (Claude Code CLI only)
 
-4 tab grouping strategies available as slash commands:
+4 tab grouping strategies available as slash commands when loaded as a plugin:
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -94,7 +93,7 @@ The plugin's `.mcp.json` auto-starts the MCP server — **no manual `mcpServers`
 | With Priority | `/chrome-tabgroup-controller:tab-group-with-priority` | Groups with active/background/archive tiers |
 | By Domain | `/chrome-tabgroup-controller:tab-group-by-domain` | Graph-based domain similarity clustering |
 
-> Skills (slash commands) are only available in Claude Code CLI — not Claude Desktop.
+> Skills are only available in Claude Code CLI — not in Claude Desktop (chat app).
 
 ---
 
