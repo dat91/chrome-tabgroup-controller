@@ -42,13 +42,20 @@ See **[docs/INSTALL.md](docs/INSTALL.md)** for the full step-by-step guide. The 
 
 ## Claude Code CLI
 
-Load as a plugin for Claude Code:
+This repo is a Claude Code plugin (`.claude-plugin/plugin.json`). Load it locally with:
 
 ```bash
 claude --plugin-dir /path/to/chrome-tabgroup-controller
 ```
 
-This gives you the same 15 MCP tools plus 4 tab grouping skills as slash commands.
+The plugin's `.mcp.json` auto-starts the MCP server — **no manual `mcpServers` config needed**. The same 15 MCP tools are available immediately, plus 4 tab grouping skills as namespaced slash commands:
+
+| Skill | Slash command |
+|-------|--------------|
+| By Intent | `/chrome-tabgroup-controller:tab-group-by-intent` |
+| By Context | `/chrome-tabgroup-controller:tab-group-by-context` |
+| With Priority | `/chrome-tabgroup-controller:tab-group-with-priority` |
+| By Domain | `/chrome-tabgroup-controller:tab-group-by-domain` |
 
 ---
 

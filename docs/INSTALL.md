@@ -129,21 +129,26 @@ Quit Claude Desktop fully (`Cmd+Q`) and reopen it. The MCP server starts automat
 
 ## Step 5: Claude Code CLI (Alternative)
 
-If you use Claude Code CLI instead of Claude Desktop, load the project as a plugin:
+> **Claude Desktop vs Claude Code CLI:** Claude Desktop requires the manual `mcpServers` config in Step 4. Claude Code CLI users can skip that entirely — the plugin handles it automatically.
+
+This repo is a Claude Code plugin (`.claude-plugin/plugin.json`). Load it with:
 
 ```bash
 claude --plugin-dir /path/to/chrome-tabgroup-controller
 ```
 
-This gives you everything from the Claude Desktop integration, plus:
+The plugin's `.mcp.json` auto-starts the MCP server when the session begins — **no edits to any config file needed**. All 15 MCP tools are available immediately.
 
-- **4 tab grouping skills** accessible as slash commands:
-  - `/chrome-tabgroup-controller:tab-group-by-intent` — groups by inferred goal
-  - `/chrome-tabgroup-controller:tab-group-by-context` — groups by your current work context
-  - `/chrome-tabgroup-controller:tab-group-with-priority` — groups with active/background/archive tiers
-  - `/chrome-tabgroup-controller:tab-group-by-domain` — graph-based domain clustering
+You also get 4 tab grouping skills as namespaced slash commands (Claude Code CLI only):
 
-> Note: MCP prompt templates (skills) only work in Claude Code CLI — they are not available in Claude Desktop.
+| Slash command | Description |
+|---------------|-------------|
+| `/chrome-tabgroup-controller:tab-group-by-intent` | Groups by inferred user goal (two-pass clustering) |
+| `/chrome-tabgroup-controller:tab-group-by-context` | Groups relative to your current work context |
+| `/chrome-tabgroup-controller:tab-group-with-priority` | Groups with active/background/archive tiers |
+| `/chrome-tabgroup-controller:tab-group-by-domain` | Graph-based domain similarity clustering |
+
+> Skills (slash commands) are only available in Claude Code CLI — not Claude Desktop.
 
 ---
 
