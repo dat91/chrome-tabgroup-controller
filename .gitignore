@@ -26,3 +26,7 @@ Thumbs.db
 # Build output
 dist/
 build/
+
+# External skills (Claude Code skills — stored elsewhere)
+skills/
+skills.zip
