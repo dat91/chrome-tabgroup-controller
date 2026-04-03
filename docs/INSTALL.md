@@ -152,6 +152,46 @@ You also get 4 tab grouping skills as namespaced slash commands:
 
 ---
 
+## Step 6: Install Skills Manually (Claude Code Desktop / CLI)
+
+An alternative to `--plugin-dir`: copy the skills to `~/.claude/skills/` and they become available as personal skills in **all** Claude Code sessions — no plugin flag needed each time.
+
+```bash
+# Run from the repo root
+cp -r skills/* ~/.claude/skills/
+```
+
+Or install individually:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -r skills/tab-group-by-intent ~/.claude/skills/
+cp -r skills/tab-group-by-context ~/.claude/skills/
+cp -r skills/tab-group-by-domain ~/.claude/skills/
+cp -r skills/tab-group-with-priority ~/.claude/skills/
+```
+
+Skills are available immediately in any Claude Code session as:
+
+```
+/tab-group-by-intent
+/tab-group-by-context [your role and current work context]
+/tab-group-by-domain
+/tab-group-with-priority
+```
+
+**No namespace prefix** — unlike the plugin (`/chrome-tabgroup-controller:tab-group-by-intent`), personal skills use just the skill name.
+
+> **Important:** Manual skill install does NOT auto-start the MCP server. The skills call `tab_snapshot`, `tab_group_create`, etc. — those tools must be available. You still need either:
+> - The Claude Desktop `mcpServers` config from Step 4, or
+> - A `mcpServers` entry in your Claude Code `~/.claude/settings.json`
+>
+> The `--plugin-dir` approach (Step 5) is the only option that handles MCP server config automatically via `.mcp.json`.
+
+> Skills work in Claude Code (Desktop Code tab and CLI). They do **not** work in Claude Desktop (chat app).
+
+---
+
 ## Troubleshooting
 
 ### Extension icon shows "Connecting..." / red dot
