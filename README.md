@@ -1,106 +1,139 @@
 # Chrome Tab Group Controller
 
-Programmatically control Chrome tab groups via a WebSocket bridge.
+Let Claude control your Chrome tab groups. Organize, rename, collapse, and manage tabs through natural language via a local MCP bridge.
 
 ## Architecture
 
 ```
-Your Script / Claude
-      │
-      ▼
-WebSocket (ws://localhost:9876)
-      │
-      ▼
+Claude Desktop / Claude Code CLI
+          ↓  (MCP stdio)
+native-host/mcp-server.js   ← MCP server + WebSocket server
+          ↓  (WebSocket, port 9876)
 Chrome Extension (background.js)
-      │
-      ▼
+          ↓
 chrome.tabGroups API
 ```
 
-## Setup
+The MCP server starts automatically when Claude Desktop or Claude Code launches — no manual server management needed.
 
-### 1. Install the Chrome Extension
+---
 
-1. Open `chrome://extensions`
-2. Enable **Developer mode** (top right)
-3. Click **Load unpacked**
-4. Select the `extension/` folder
+## Quick Start
 
-### 2. Start the WebSocket Server
+See **[docs/INSTALL.md](docs/INSTALL.md)** for the full step-by-step guide. The short version:
 
-```bash
-cd native-host
-npm install
-node server.js
+1. Load the Chrome extension (unpacked) from `extension/` via `chrome://extensions`
+2. Add the MCP server to your Claude Desktop config:
+
+```json
+{
+  "mcpServers": {
+    "chrome-tabs": {
+      "command": "node",
+      "args": ["/absolute/path/to/chrome-tabgroup-controller/native-host/mcp-server.js"]
+    }
+  }
+}
 ```
 
-### 3. Verify
-
-Click the extension icon — it should show **Connected**.
+3. Restart Claude Desktop — tools are available immediately
 
 ---
 
-## API Reference
+## Claude Code CLI
 
-### `TabGroups.snapshot()`
-Returns all groups with their tabs, plus ungrouped tabs.
+Load as a plugin for Claude Code:
 
-### `TabGroups.list(filter?)`
-List groups. Filter by `{ windowId, collapsed, color, title }`.
+```bash
+claude --plugin-dir /path/to/chrome-tabgroup-controller
+```
 
-### `TabGroups.create({ title, color, urls?, tabIds?, collapsed? })`
-Create a new group. Colors: `grey | blue | red | yellow | green | pink | purple | cyan`.
-
-### `TabGroups.update(groupId, { title?, color?, collapsed? })`
-Update a group's properties.
-
-### `TabGroups.collapse(groupId)` / `TabGroups.expand(groupId)`
-Collapse or expand a group.
-
-### `TabGroups.dissolve(groupId)`
-Ungroup all tabs in a group.
-
-### `TabGroups.move(groupId, index, windowId?)`
-Move a group to a tab bar position.
-
-### `TabGroups.tabs(filter?)`
-List tabs. Filter by `{ groupId, url, active, windowId }`.
-
-### `TabGroups.addTabsToGroup(tabIds, groupId)`
-Move tabs into an existing group.
-
-### `TabGroups.ungroupTabs(tabIds)`
-Remove tabs from their group.
-
-### `TabGroups.openTab(url, active?)`
-Open a new tab.
-
-### `TabGroups.closeTabs(tabIds)`
-Close one or more tabs.
-
-### `TabGroups.activateTab(tabId)`
-Focus a tab.
+This gives you the same 15 MCP tools plus 4 tab grouping skills as slash commands.
 
 ---
 
-## Use as a Module
+## MCP Tools
+
+15 tools available in Claude Desktop and Claude Code:
+
+| Tool | Description |
+|------|-------------|
+| `tab_snapshot` | Full snapshot of all groups and ungrouped tabs |
+| `tab_groups_list` | List groups with optional filters |
+| `tab_group_get` | Get a single group by ID |
+| `tab_group_create` | Create a new group with tabs |
+| `tab_group_update` | Rename or recolor a group |
+| `tab_group_collapse` | Collapse a group |
+| `tab_group_expand` | Expand a group |
+| `tab_group_dissolve` | Ungroup all tabs in a group |
+| `tab_group_move` | Move a group to a different position |
+| `tabs_list` | List tabs with optional filters |
+| `tabs_add_to_group` | Move tabs into an existing group |
+| `tabs_remove_from_group` | Remove tabs from their group |
+| `tab_open` | Open a new tab |
+| `tabs_close` | Close one or more tabs |
+| `tab_activate` | Focus a specific tab |
+
+---
+
+## Skills (Claude Code CLI only)
+
+4 tab grouping strategies available as slash commands:
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| By Intent | `/chrome-tabgroup-controller:tab-group-by-intent` | Groups by inferred user goal (two-pass clustering) |
+| By Context | `/chrome-tabgroup-controller:tab-group-by-context` | Groups relative to your current work context |
+| With Priority | `/chrome-tabgroup-controller:tab-group-with-priority` | Groups with active/background/archive tiers |
+| By Domain | `/chrome-tabgroup-controller:tab-group-by-domain` | Graph-based domain similarity clustering |
+
+> Skills (slash commands) are only available in Claude Code CLI — not Claude Desktop.
+
+---
+
+## Advanced: Node.js API
+
+You can also use `server.js` directly as a module in your own scripts:
 
 ```javascript
-const { TabGroups } = require('./server');
+const { TabGroups } = require('./native-host/server');
 
-// Group your Jira boards by team
-await TabGroups.create({
-  title: 'P2P Team',
+// Create a group from URLs
+const group = await TabGroups.create({
+  title: 'Research',
   color: 'blue',
   urls: [
-    'https://jira.mservice.com.vn/board/p2p',
-    'https://jira.mservice.com.vn/board/p2pfund',
+    'https://github.com',
+    'https://stackoverflow.com',
   ]
 });
 
-// Collapse everything except active team
+// Collapse everything else
 const groups = await TabGroups.list();
 for (const g of groups) {
-  if (g.title !== 'P2P Team') await TabGroups.collapse(g.id);
+  if (g.title !== 'Research') await TabGroups.collapse(g.id);
 }
 ```
+
+### API Reference
+
+```js
+await TabGroups.snapshot()                                    // all groups + tabs
+await TabGroups.list(filter?)                                 // filter by windowId, color, title, collapsed
+await TabGroups.create({ title, color, urls?, tabIds?, collapsed? })
+await TabGroups.update(groupId, { title?, color?, collapsed? })
+await TabGroups.collapse(groupId)
+await TabGroups.expand(groupId)
+await TabGroups.dissolve(groupId)                            // ungroup tabs
+await TabGroups.move(groupId, index, windowId?)
+await TabGroups.tabs(filter?)                                // filter by groupId, url, active, windowId
+await TabGroups.addTabsToGroup(tabIds, groupId)
+await TabGroups.ungroupTabs(tabIds)
+await TabGroups.openTab(url, active?)
+await TabGroups.closeTabs(tabIds)
+await TabGroups.activateTab(tabId)
+```
+
+Colors: `grey | blue | red | yellow | green | pink | purple | cyan`
+
+> **Note:** When using the Node.js API directly, start `server.js` separately. Do not run it alongside the MCP server — both bind port 9876 and will conflict.
