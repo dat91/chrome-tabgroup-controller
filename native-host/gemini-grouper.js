@@ -95,33 +95,35 @@ function buildPrompt(strategy, snapshot, userContext) {
     case 'intent':
       return base + `Group these tabs by user intent using two passes.
 
-Pass 1 — for each tab, infer what the user was trying to accomplish (not the content type). Think about goals like "Debugging Redis issue", "Planning Vietnam trip", "Job search — backend roles".
+Pass 1 — Clustering: For each tab, infer what the user was trying to accomplish (not what the content is about). Look at the URL, title, and domain together. Assign each tab to a task cluster (e.g. "Planning Vietnam trip", "Debugging RabbitMQ issue", "Job search — backend roles").
 
-Pass 2 — review each cluster and write a concise 2–4 word group name that captures the user's goal. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
+Pass 2 — Naming: Review each cluster's actual content and write a concise group name (2–4 words) that captures the user's goal, not the content type. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
 
-Rules:
-- Leave one-off tabs with no clear cluster ungrouped (omit them from output entirely)
-- Don't force everything into a group
-- Each group should have at least 2 tabs`;
+Leave clearly unrelated one-off tabs ungrouped — do not force them into a group. Each group should have at least 2 tabs.`;
 
     case 'context':
       return base + `The user describes their current work as: "${userContext}"
 
-Group tabs by how they map to the user's actual work above. Use vocabulary from their description when naming groups. Omit tabs that are clearly unrelated to their stated context.`;
+Map each tab to the user's real tasks, projects, or concerns described in the context. Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. Use group names that match vocabulary from the user's own context description. Omit tabs that are clearly unrelated to their stated context.`;
 
     case 'priority':
-      return base + `Triage tabs into priority groups:
+      return base + `Organise tabs into groups with priority levels:
 - "active" (green): currently in use, directly needed right now
-- "background" (blue): reference material, needed soon but not immediately
-- "archive" (grey): stale, finished, or duplicated
+- "background" (blue): reference material, return later
+- "archive" (grey): stale or done
 
-Assign all tabs to exactly one of these three groups. Use the colors specified above.`;
+Leave clearly one-off tabs with no priority signal ungrouped — do not force every tab into a group.`;
 
     case 'domain':
-      return base + `Cluster tabs by structural similarity:
-Step 1 — identify tabs that share domain, subdomain, URL path prefix, or closely related title keywords.
-Step 2 — form groups of 2+ tabs from dense clusters. Isolated tabs stay ungrouped (omit them).
-Step 3 — name each group from its dominant signal (e.g. "github.com/myrepo", "React docs").`;
+      return base + `Cluster tabs using a graph-based similarity approach.
+
+Step 1 — Build similarity graph: each tab is a node. Draw edges between tabs that share two or more signals: same domain, same subdomain, overlapping URL path prefix, or related keywords in titles. Weight edges by number of shared signals.
+
+Step 2 — Find communities: identify clusters of tabs that are densely connected (multiple shared signals). Isolated nodes with no strong similarity to others can remain ungrouped.
+
+Step 3 — Name each community from its dominant signal (e.g. "github.com/myrepo — PR review", "docs.stripe.com — integration"). Choose a fitting color from: ${VALID_COLORS.join(', ')}.
+
+Truly isolated tabs may be left ungrouped or collected into a small "Miscellaneous" group.`;
   }
 }
 
