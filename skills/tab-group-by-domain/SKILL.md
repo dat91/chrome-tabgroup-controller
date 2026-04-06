@@ -26,6 +26,6 @@ Cluster tabs by structural similarity: shared domains, URL paths, and title keyw
 
 4. **Step 3 — Name each community** from its dominant signal — e.g. `"github.com/myrepo — PR review"`, `"docs.stripe.com — integration"`. Choose a fitting color from: grey, blue, red, yellow, green, pink, purple, cyan.
 
-5. **Execution**: Call `tab_group_create` for each community with `title`, `color`, and `tabIds`. Truly isolated tabs may be left ungrouped or collected into a small "Misc" group.
+5. **Execution**: Call `tab_group_create` for each community with `title`, `color`, and `tabIds`. Collect any truly isolated tabs with no cluster fit into an "Archive" group (grey). Every tab must end up in a group — none left ungrouped.
 
 6. After grouping, briefly explain the dominant signal that defined each cluster.

@@ -25,7 +25,6 @@ Group tabs AND triage them: active work, background reference, or archive (stale
 3. **Output a structured summary** of all groups with your reasoning for each priority and action. Show this to the user *before* executing — they should see the plan.
 
 4. **Execute**:
-   - Call `tab_group_create` for all `"active"` and `"background"` groups.
-   - For `"archive"` groups: present the list and **ask the user for confirmation** before closing or bookmarking any tabs.
+   - Call `tab_group_create` for all groups including `"archive"` — always create an "Archive" group (grey) for stale/done tabs. Every tab must end up in a group — none left ungrouped.
 
-5. Report what was done and what's pending user decision.
+5. Report what was done and note which tabs landed in Archive.

@@ -21,4 +21,6 @@ Organise tabs using the user's real work context so groups reflect their actual 
 
 4. **Execution**: For each group call `tab_group_create` with `title`, `color`, and `tabIds`. Colors: grey, blue, red, yellow, green, pink, purple, cyan.
 
-5. After grouping, briefly explain how each group maps to something from the user's context.
+5. Collect any tabs that don't map to the user's stated context into an "Archive" group (grey). Every tab must end up in a group — none left ungrouped.
+
+6. After grouping, briefly explain how each group maps to something from the user's context.

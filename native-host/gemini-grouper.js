@@ -99,12 +99,12 @@ Pass 1 — Clustering: For each tab, infer what the user was trying to accomplis
 
 Pass 2 — Naming: Review each cluster's actual content and write a concise group name (2–4 words) that captures the user's goal, not the content type. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
 
-Leave clearly unrelated one-off tabs ungrouped — do not force them into a group. Each group should have at least 2 tabs.`;
+Collect any remaining tabs that don't fit a clear intent cluster into an "Archive" group (grey color). Every tab must end up in a group — none left ungrouped. Each named group should have at least 2 tabs; Archive may have 1.`;
 
     case 'context':
       return base + `The user describes their current work as: "${userContext}"
 
-Map each tab to the user's real tasks, projects, or concerns described in the context. Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. Use group names that match vocabulary from the user's own context description. Omit tabs that are clearly unrelated to their stated context.`;
+Map each tab to the user's real tasks, projects, or concerns described in the context. Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. Use group names that match vocabulary from the user's own context description. Collect any tabs that don't map to the stated context into an "Archive" group (grey). Every tab must end up in a group — none left ungrouped.`;
 
     case 'priority':
       return base + `Organise tabs into groups with priority levels:
@@ -112,7 +112,7 @@ Map each tab to the user's real tasks, projects, or concerns described in the co
 - "background" (blue): reference material, return later
 - "archive" (grey): stale or done
 
-Leave clearly one-off tabs with no priority signal ungrouped — do not force every tab into a group.`;
+Always create an "Archive" group (grey) for stale/done tabs. Every tab must end up in a group — none left ungrouped.`;
 
     case 'domain':
       return base + `Cluster tabs using a graph-based similarity approach.
@@ -123,7 +123,7 @@ Step 2 — Find communities: identify clusters of tabs that are densely connecte
 
 Step 3 — Name each community from its dominant signal (e.g. "github.com/myrepo — PR review", "docs.stripe.com — integration"). Choose a fitting color from: ${VALID_COLORS.join(', ')}.
 
-Truly isolated tabs may be left ungrouped or collected into a small "Miscellaneous" group.`;
+Collect any truly isolated tabs with no cluster fit into an "Archive" group (grey). Every tab must end up in a group — none left ungrouped.`;
   }
 }
 

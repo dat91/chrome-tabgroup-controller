@@ -20,6 +20,6 @@ Organise the user's open Chrome tabs into meaningful groups based on what they w
 
 4. **Execution**: For each group, call `tab_group_create` with `title`, `color`, and `tabIds`.
 
-5. Leave clearly unrelated one-off tabs ungrouped — don't force everything into a group.
+5. Collect any remaining tabs that don't fit a clear intent cluster into an "Archive" group (grey color). Every tab must end up in a group — none left ungrouped.
 
 6. After grouping, briefly summarise what groups were created and why.

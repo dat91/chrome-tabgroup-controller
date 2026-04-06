@@ -193,7 +193,8 @@ async function main() {
     `Pass 2 — Naming: Review each cluster's actual content and write a concise group name (2–4 words) that captures ` +
     `the user's goal, not the content type. Choose a fitting color from: grey, blue, red, yellow, green, pink, purple, cyan.\n\n` +
     `Execution: For each group call tab_group_create with title, color, and tabIds. ` +
-    `Leave clearly unrelated one-off tabs ungrouped — do not force them into a group.`
+    `Collect any remaining tabs that don't fit a clear intent cluster into an "Archive" group (grey color). ` +
+    `Every tab must end up in a group — none left ungrouped.`
   ));
 
   server.registerPrompt('group_by_context', {
@@ -209,7 +210,9 @@ async function main() {
     `Map each tab to the user's real tasks, projects, or concerns described in the context. ` +
     `Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. ` +
     `Use group names that match vocabulary from the user's own context description.\n\n` +
-    `For each group: call tab_group_create with title, color, and tabIds.`
+    `For each group: call tab_group_create with title, color, and tabIds. ` +
+    `Collect any tabs that don't map to the user's stated context into an "Archive" group (grey). ` +
+    `Every tab must end up in a group — none left ungrouped.`
   ));
 
   server.registerPrompt('group_with_priority', {
@@ -223,8 +226,8 @@ async function main() {
     `  - priority: "active" (currently in use), "background" (reference / return later), or "archive" (stale / done)\n` +
     `  - suggested_action: "keep" (actively useful), "close" (done or duplicate), or "bookmark" (save for later, then close)\n\n` +
     `First output a structured summary of all groups with your reasoning for each priority and action. ` +
-    `Then execute: call tab_group_create for "active" and "background" groups. ` +
-    `For "archive" groups, present the list and ask the user for confirmation before closing or bookmarking.`
+    `Then execute: call tab_group_create for all groups including "archive". ` +
+    `Always create an "Archive" group (grey) for stale/done tabs. Every tab must end up in a group — none left ungrouped.`
   ));
 
   server.registerPrompt('group_by_domain_graph', {
@@ -240,7 +243,8 @@ async function main() {
     `(e.g. "github.com/myrepo — PR review", "docs.stripe.com — integration"). ` +
     `Choose a fitting color from: grey, blue, red, yellow, green, pink, purple, cyan.\n\n` +
     `Execution: call tab_group_create for each community with title, color, and tabIds. ` +
-    `Truly isolated tabs may be left ungrouped or collected into a small "Miscellaneous" group.`
+    `Collect any truly isolated tabs with no cluster fit into an "Archive" group (grey). ` +
+    `Every tab must end up in a group — none left ungrouped.`
   ));
 
   // ── Start MCP transport ────────────────────────────────────────────────────
