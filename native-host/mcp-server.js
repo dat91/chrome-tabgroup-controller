@@ -189,9 +189,9 @@ async function main() {
     `Call the tab_snapshot tool to get all current tabs, then organise them into groups using intent-based clustering.\n\n` +
     `Pass 1 — Clustering: For each tab, infer what the user was trying to accomplish (not what the content is about). ` +
     `Look at the URL, title, and domain together. Assign each tab to a task cluster ` +
-    `(e.g. "Planning Vietnam trip", "Debugging RabbitMQ issue", "Job search — backend roles").\n\n` +
-    `Pass 2 — Naming: Review each cluster's actual content and write a concise group name (2–4 words) that captures ` +
-    `the user's goal, not the content type. Choose a fitting color from: grey, blue, red, yellow, green, pink, purple, cyan.\n\n` +
+    `(e.g. "🗺️ Vietnam Trip", "🐛 RabbitMQ Debug", "💼 Backend Jobs").\n\n` +
+    `Pass 2 — Naming: Review each cluster's actual content and write a concise group name that starts with a relevant emoji ` +
+    `followed by 2–4 words capturing the user's goal, not the content type. Choose a fitting color from: grey, blue, red, yellow, green, pink, purple, cyan.\n\n` +
     `Execution: For each group call tab_group_create with title, color, and tabIds. ` +
     `Collect any remaining tabs that don't fit a clear intent cluster into an "Archive" group (grey color). ` +
     `Every tab must end up in a group — none left ungrouped.`
@@ -209,9 +209,9 @@ async function main() {
     `Call the tab_snapshot tool to get all current tabs. Using the context above, organise tabs into groups that reflect the user's actual work.\n\n` +
     `Map each tab to the user's real tasks, projects, or concerns described in the context. ` +
     `Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. ` +
-    `Use group names that match vocabulary from the user's own context description.\n\n` +
+    `Use group names that match vocabulary from the user's own context description. Each group name must start with a relevant emoji.\n\n` +
     `For each group: call tab_group_create with title, color, and tabIds. ` +
-    `Collect any tabs that don't map to the user's stated context into an "Archive" group (grey). ` +
+    `Collect any tabs that don't map to the user's stated context into a "🗃️ Archive" group (grey). ` +
     `Every tab must end up in a group — none left ungrouped.`
   ));
 
@@ -220,7 +220,7 @@ async function main() {
   }, () => userMsg(
     `Call the tab_snapshot tool to get all current tabs, then organise them into groups with priority and suggested actions.\n\n` +
     `For each group determine:\n` +
-    `  - group_name: concise label (2–4 words)\n` +
+    `  - group_name: concise label starting with a relevant emoji, then 2–4 words\n` +
     `  - color: fitting color from: grey, blue, red, yellow, green, pink, purple, cyan\n` +
     `  - tabs: list of tab IDs\n` +
     `  - priority: "active" (currently in use), "background" (reference / return later), or "archive" (stale / done)\n` +
@@ -240,10 +240,10 @@ async function main() {
     `Step 2 — Find communities: identify clusters of tabs that are densely connected (multiple shared signals). ` +
     `Isolated nodes with no strong similarity to others can remain ungrouped.\n\n` +
     `Step 3 — Name each community from its dominant signal ` +
-    `(e.g. "github.com/myrepo — PR review", "docs.stripe.com — integration"). ` +
+    `(e.g. "🐙 myrepo — PR review", "💳 Stripe Integration"). Each group name must start with a relevant emoji. ` +
     `Choose a fitting color from: grey, blue, red, yellow, green, pink, purple, cyan.\n\n` +
     `Execution: call tab_group_create for each community with title, color, and tabIds. ` +
-    `Collect any truly isolated tabs with no cluster fit into an "Archive" group (grey). ` +
+    `Collect any truly isolated tabs with no cluster fit into a "🗂️ Miscellaneous" group (grey). ` +
     `Every tab must end up in a group — none left ungrouped.`
   ));
 

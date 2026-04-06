@@ -56,7 +56,7 @@ const GROUP_SCHEMA = {
         properties: {
           title: {
             type: Type.STRING,
-            description: 'Short group name, 2–4 words'
+            description: 'Short group name starting with a relevant emoji, then 2–4 words (e.g. "🗺️ Vietnam Trip", "🐛 RabbitMQ Debug")'
           },
           color: {
             type: Type.STRING,
@@ -95,24 +95,24 @@ function buildPrompt(strategy, snapshot, userContext) {
     case 'intent':
       return base + `Group these tabs by user intent using two passes.
 
-Pass 1 — Clustering: For each tab, infer what the user was trying to accomplish (not what the content is about). Look at the URL, title, and domain together. Assign each tab to a task cluster (e.g. "Planning Vietnam trip", "Debugging RabbitMQ issue", "Job search — backend roles").
+Pass 1 — Clustering: For each tab, infer what the user was trying to accomplish (not what the content is about). Look at the URL, title, and domain together. Assign each tab to a task cluster (e.g. "🗺️ Vietnam Trip", "🐛 RabbitMQ Debug", "💼 Backend Jobs").
 
-Pass 2 — Naming: Review each cluster's actual content and write a concise group name (2–4 words) that captures the user's goal, not the content type. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
+Pass 2 — Naming: Review each cluster's actual content and write a concise group name that starts with a relevant emoji followed by 2–4 words capturing the user's goal, not the content type. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
 
 Collect any remaining tabs that don't fit a clear intent cluster into an "Archive" group (grey color). Every tab must end up in a group — none left ungrouped. Each named group should have at least 2 tabs; Archive may have 1.`;
 
     case 'context':
       return base + `The user describes their current work as: "${userContext}"
 
-Map each tab to the user's real tasks, projects, or concerns described in the context. Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. Use group names that match vocabulary from the user's own context description. Collect any tabs that don't map to the stated context into an "Archive" group (grey). Every tab must end up in a group — none left ungrouped.`;
+Map each tab to the user's real tasks, projects, or concerns described in the context. Avoid generic categories like "Social Media" or "Documentation" — group by what matters to this specific user right now. Use group names that match vocabulary from the user's own context description. Each group name must start with a relevant emoji. Collect any tabs that don't map to the stated context into an "🗃️ Archive" group (grey). Every tab must end up in a group — none left ungrouped.`;
 
     case 'priority':
       return base + `Organise tabs into groups with priority levels:
-- "active" (green): currently in use, directly needed right now
-- "background" (blue): reference material, return later
-- "archive" (grey): stale or done
+- "🟢 Active" (green): currently in use, directly needed right now
+- "📚 Background" (blue): reference material, return later
+- "🗃️ Archive" (grey): stale or done
 
-Always create an "Archive" group (grey) for stale/done tabs. Every tab must end up in a group — none left ungrouped.`;
+Each group name must start with a relevant emoji. Always create a "🗃️ Archive" group (grey) for stale/done tabs. Every tab must end up in a group — none left ungrouped.`;
 
     case 'domain':
       return base + `Cluster tabs using a graph-based similarity approach.
@@ -121,9 +121,9 @@ Step 1 — Build similarity graph: each tab is a node. Draw edges between tabs t
 
 Step 2 — Find communities: identify clusters of tabs that are densely connected (multiple shared signals). Isolated nodes with no strong similarity to others can remain ungrouped.
 
-Step 3 — Name each community from its dominant signal (e.g. "github.com/myrepo — PR review", "docs.stripe.com — integration"). Choose a fitting color from: ${VALID_COLORS.join(', ')}.
+Step 3 — Name each community from its dominant signal (e.g. "🐙 myrepo — PR review", "💳 Stripe Integration"). Each group name must start with a relevant emoji. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
 
-Collect any truly isolated tabs with no cluster fit into an "Archive" group (grey). Every tab must end up in a group — none left ungrouped.`;
+Collect any truly isolated tabs with no cluster fit into a "🗂️ Miscellaneous" group (grey). Every tab must end up in a group — none left ungrouped.`;
   }
 }
 
