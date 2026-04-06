@@ -194,7 +194,7 @@ async function main() {
 
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-pro-preview',
+      model: 'gemini-2.5-flash',
       contents: buildPrompt(STRATEGY, snapshot, USER_CONTEXT),
       config: {
         responseMimeType: 'application/json',

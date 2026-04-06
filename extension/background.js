@@ -26,14 +26,144 @@ chrome.runtime.onStartup.addListener(() => ensureOffscreenDocument());
 // Also ensure it exists when the service worker first loads (e.g. after reload/update)
 ensureOffscreenDocument();
 
-// Handle commands forwarded from the offscreen WebSocket document
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type !== 'ws-command') return;
-  const { msg } = message;
-  handleCommand(msg).then(result => {
-    chrome.runtime.sendMessage({ type: 'ws-send', payload: { id: msg.id, ...result } });
-  });
+// Handle commands forwarded from the offscreen WebSocket document,
+// and direct Gemini-group requests from the popup.
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === 'ws-command') {
+    const { msg } = message;
+    handleCommand(msg).then(result => {
+      chrome.runtime.sendMessage({ type: 'ws-send', payload: { id: msg.id, ...result } });
+    });
+    return;
+  }
+
+  if (message.type === 'gemini-group') {
+    const { strategy, userContext } = message;
+    (async () => {
+      const { geminiApiKey } = await chrome.storage.local.get('geminiApiKey');
+      if (!geminiApiKey) {
+        return { error: 'No Gemini API key set. Click ⚙ to add one.' };
+      }
+      const snapshotResult = await handleCommand({ cmd: 'snapshot' });
+      if (snapshotResult.error) return { error: snapshotResult.error };
+
+      const snapshot = snapshotResult.data;
+      const totalTabs =
+        snapshot.groups.reduce((n, g) => n + g.tabs.length, 0) +
+        snapshot.ungrouped.length;
+      if (totalTabs === 0) return { error: 'No open tabs found.' };
+
+      const prompt = buildGeminiPrompt(strategy, snapshot, userContext);
+      const { groups } = await callGemini(geminiApiKey, prompt);
+      if (!groups?.length) return { success: true, count: 0 };
+
+      for (const group of groups) {
+        await handleCommand({
+          cmd: 'groups.create',
+          params: { title: group.title, color: group.color, tabIds: group.tabIds }
+        });
+      }
+      return { success: true, count: groups.length };
+    })().then(sendResponse).catch(e => sendResponse({ error: e.message }));
+    return true; // async sendResponse
+  }
 });
+
+// ── GEMINI GROUPING ───────────────────────────────────────────────────────────
+
+const VALID_COLORS = ['grey', 'blue', 'red', 'yellow', 'green', 'pink', 'purple', 'cyan'];
+
+const GROUP_SCHEMA = {
+  type: 'object',
+  properties: {
+    groups: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          title: { type: 'string', description: 'Short group name, 2–4 words' },
+          color: { type: 'string', enum: VALID_COLORS },
+          tabIds: { type: 'array', items: { type: 'integer' } }
+        },
+        required: ['title', 'color', 'tabIds']
+      }
+    }
+  },
+  required: ['groups']
+};
+
+function buildGeminiPrompt(strategy, snapshot, userContext) {
+  const allTabs = [
+    ...snapshot.groups.flatMap(g => g.tabs),
+    ...snapshot.ungrouped
+  ];
+  const tabsJson = JSON.stringify(
+    allTabs.map(t => ({ id: t.id, url: t.url, title: t.title })),
+    null, 2
+  );
+  const base = `Here are the user's open Chrome tabs:\n${tabsJson}\n\n`;
+
+  switch (strategy) {
+    case 'intent':
+      return base + `Group these tabs by user intent using two passes.
+
+Pass 1 — for each tab, infer what the user was trying to accomplish (not the content type). Think about goals like "Debugging Redis issue", "Planning Vietnam trip", "Job search — backend roles".
+
+Pass 2 — review each cluster and write a concise 2–4 word group name that captures the user's goal. Choose a fitting color from: ${VALID_COLORS.join(', ')}.
+
+Rules:
+- Leave one-off tabs with no clear cluster ungrouped (omit them from output entirely)
+- Don't force everything into a group
+- Each group should have at least 2 tabs`;
+
+    case 'context':
+      return base + `The user describes their current work as: "${userContext}"
+
+Group tabs by how they map to the user's actual work above. Use vocabulary from their description when naming groups. Omit tabs that are clearly unrelated to their stated context.`;
+
+    case 'priority':
+      return base + `Triage tabs into priority groups:
+- "active" (green): currently in use, directly needed right now
+- "background" (blue): reference material, needed soon but not immediately
+- "archive" (grey): stale, finished, or duplicated
+
+Assign all tabs to exactly one of these three groups. Use the colors specified above.`;
+
+    case 'domain':
+      return base + `Cluster tabs by structural similarity:
+Step 1 — identify tabs that share domain, subdomain, URL path prefix, or closely related title keywords.
+Step 2 — form groups of 2+ tabs from dense clusters. Isolated tabs stay ungrouped (omit them).
+Step 3 — name each group from its dominant signal (e.g. "github.com/myrepo", "React docs").`;
+
+    default:
+      throw new Error(`Unknown strategy: ${strategy}`);
+  }
+}
+
+async function callGemini(apiKey, prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: GROUP_SCHEMA
+      }
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `Gemini API error ${resp.status}`);
+  }
+  const data = await resp.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error('Empty response from Gemini');
+  return JSON.parse(text);
+}
+
+// ── TAB COMMANDS ──────────────────────────────────────────────────────────────
 
 async function handleCommand({ cmd, params = {} }) {
   try {

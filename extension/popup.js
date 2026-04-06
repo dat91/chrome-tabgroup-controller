@@ -1,6 +1,12 @@
 const dot = document.getElementById('dot');
 const statusText = document.getElementById('statusText');
 const tip = document.getElementById('tip');
+const strategy = document.getElementById('strategy');
+const contextInput = document.getElementById('contextInput');
+const groupBtn = document.getElementById('groupBtn');
+const result = document.getElementById('result');
+
+// ── WS status ────────────────────────────────────────────────────────────────
 
 function checkConnection() {
   // Ask offscreen.js for its current WebSocket readyState.
@@ -30,3 +36,54 @@ document.getElementById('snapshotBtn').addEventListener('click', () => {
 });
 
 checkConnection();
+
+// ── Gemini grouping ───────────────────────────────────────────────────────────
+
+strategy.addEventListener('change', () => {
+  contextInput.style.display = strategy.value === 'context' ? 'block' : 'none';
+});
+
+groupBtn.addEventListener('click', () => {
+  const strat = strategy.value;
+  const userContext = contextInput.value.trim();
+
+  if (strat === 'context' && !userContext) {
+    result.textContent = 'Enter a description of your current work.';
+    result.className = 'err';
+    return;
+  }
+
+  groupBtn.disabled = true;
+  groupBtn.textContent = 'Thinking...';
+  result.textContent = '';
+  result.className = '';
+
+  chrome.runtime.sendMessage(
+    { type: 'gemini-group', strategy: strat, userContext },
+    (resp) => {
+      groupBtn.disabled = false;
+      groupBtn.textContent = 'Group with Gemini';
+
+      if (chrome.runtime.lastError) {
+        result.textContent = chrome.runtime.lastError.message;
+        result.className = 'err';
+        return;
+      }
+      if (resp?.error) {
+        result.textContent = resp.error;
+        result.className = 'err';
+        return;
+      }
+      result.textContent = resp.count === 0
+        ? 'No groups to create.'
+        : `Done — created ${resp.count} group${resp.count !== 1 ? 's' : ''}.`;
+      result.className = 'ok';
+    }
+  );
+});
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  chrome.runtime.openOptionsPage();
+});

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 340px; font-family: system-ui, sans-serif; padding: 20px; margin: 0; background: #1e1e2e; color: #cdd6f4; }
+    h2 { margin: 0 0 16px; font-size: 14px; color: #cba6f7; }
+    label { display: block; font-size: 12px; color: #a6adc8; margin-bottom: 6px; }
+    input { width: 100%; box-sizing: border-box; padding: 7px 10px; background: #313244; color: #cdd6f4; border: 1px solid #45475a; border-radius: 6px; font-size: 12px; font-family: monospace; }
+    input:focus { outline: none; border-color: #cba6f7; }
+    button { width: 100%; margin-top: 10px; padding: 7px; background: #cba6f7; color: #1e1e2e; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    button:hover { background: #d0b4ff; }
+    .msg { margin-top: 10px; font-size: 11px; min-height: 16px; }
+    .ok  { color: #a6e3a1; }
+    .err { color: #f38ba8; }
+    .tip { font-size: 11px; color: #6c7086; margin-top: 14px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <h2>Tab Group Controller — Settings</h2>
+  <label for="apiKey">Gemini API Key</label>
+  <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+  <button id="save">Save</button>
+  <div class="msg" id="msg"></div>
+  <div class="tip">
+    Get a free key at <strong>aistudio.google.com</strong> &rarr; Get API key.<br>
+    Stored locally in your browser — never sent anywhere except Gemini.
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

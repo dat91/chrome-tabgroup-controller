@@ -6,12 +6,25 @@
     body { width: 280px; font-family: system-ui, sans-serif; padding: 16px; margin: 0; background: #1e1e2e; color: #cdd6f4; }
     h2 { margin: 0 0 12px; font-size: 14px; color: #cba6f7; }
     .status { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 12px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #f38ba8; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #f38ba8; flex-shrink: 0; }
     .dot.connected { background: #a6e3a1; }
     code { background: #313244; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
     .tip { font-size: 11px; color: #6c7086; margin-top: 12px; line-height: 1.5; }
     button { width: 100%; margin-top: 8px; padding: 6px; background: #313244; color: #cdd6f4; border: 1px solid #45475a; border-radius: 6px; cursor: pointer; font-size: 12px; }
     button:hover { background: #45475a; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    hr { border: none; border-top: 1px solid #313244; margin: 14px 0 10px; }
+    select, input[type="text"] { width: 100%; box-sizing: border-box; padding: 5px 8px; background: #313244; color: #cdd6f4; border: 1px solid #45475a; border-radius: 6px; font-size: 12px; }
+    select:focus, input[type="text"]:focus { outline: none; border-color: #cba6f7; }
+    input[type="text"] { margin-top: 6px; display: none; }
+    #groupBtn { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; font-weight: 600; }
+    #groupBtn:hover:not(:disabled) { background: #d0b4ff; }
+    #result { font-size: 11px; margin-top: 8px; min-height: 14px; }
+    #result.ok  { color: #a6e3a1; }
+    #result.err { color: #f38ba8; }
+    .footer { display: flex; justify-content: flex-end; margin-top: 10px; }
+    #settingsBtn { width: auto; margin: 0; padding: 0; background: none; border: none; font-size: 11px; color: #6c7086; text-decoration: underline; cursor: pointer; }
+    #settingsBtn:hover { background: none; color: #cdd6f4; }
   </style>
 </head>
 <body>
@@ -21,8 +34,25 @@
     <span id="statusText">Connecting...</span>
   </div>
   <div>WS: <code>ws://localhost:9876</code></div>
-  <button id="snapshotBtn">📸 Log Snapshot</button>
+  <button id="snapshotBtn">Log Snapshot</button>
   <div class="tip" id="tip">Start the local WebSocket server to enable external control.</div>
+
+  <hr>
+
+  <select id="strategy">
+    <option value="intent">By intent</option>
+    <option value="context">By context</option>
+    <option value="priority">By priority</option>
+    <option value="domain">By domain</option>
+  </select>
+  <input type="text" id="contextInput" placeholder="Describe your current work...">
+  <button id="groupBtn">Group with Gemini</button>
+  <div id="result"></div>
+
+  <div class="footer">
+    <button id="settingsBtn">⚙ API key</button>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

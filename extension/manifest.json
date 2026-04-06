@@ -1,13 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Tab Group Controller",
-  "version": "1.0.0",
-  "description": "WebSocket bridge to control Chrome tab groups programmatically",
+  "version": "1.1.0",
+  "description": "WebSocket bridge + Gemini AI to control Chrome tab groups programmatically",
   "permissions": [
     "tabs",
     "tabGroups",
     "storage",
     "offscreen"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -15,5 +18,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_title": "Tab Group Controller"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
   }
 }
