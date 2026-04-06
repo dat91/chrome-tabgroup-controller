@@ -69,6 +69,15 @@ async function handleCommand({ cmd, params = {} }) {
           );
           tabIds = [...tabIds, ...createdTabs.map(t => t.id)];
         }
+        // Filter to tabs in normal windows only — popup/app windows don't support grouping
+        if (tabIds.length > 0) {
+          const tabDetails = await Promise.all(tabIds.map(id => chrome.tabs.get(id).catch(() => null)));
+          const windowIds = [...new Set(tabDetails.filter(Boolean).map(t => t.windowId))];
+          const windows = await Promise.all(windowIds.map(id => chrome.windows.get(id).catch(() => null)));
+          const normalWindowIds = new Set(windows.filter(w => w?.type === 'normal').map(w => w.id));
+          tabIds = tabDetails.filter(t => t && normalWindowIds.has(t.windowId)).map(t => t.id);
+        }
+        if (tabIds.length === 0) return { error: 'No groupable tabs (all tabs are in popup or app windows)' };
         const groupId = await chrome.tabs.group({ tabIds });
         const group = await chrome.tabGroups.update(groupId, {
           title: params.title || '',
@@ -133,7 +142,7 @@ async function handleCommand({ cmd, params = {} }) {
 
       case 'snapshot': {
         const [tabs, groups] = await Promise.all([
-          chrome.tabs.query({}),
+          chrome.tabs.query({ windowType: 'normal' }),
           chrome.tabGroups.query({})
         ]);
         const groupMap = {};

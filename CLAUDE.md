@@ -92,6 +92,28 @@ node .claude/hooks/check_mcp_bridge.js
 2. Kill it if found: `kill <PID>`
 3. Restart the Claude Code session (MCP server auto-starts via settings.json)
 
+## Gemini-powered grouper (standalone, no Claude needed)
+
+`native-host/gemini-grouper.js` groups tabs using Gemini instead of Claude. Run it **outside** Claude Code sessions (port 9876 must be free).
+
+```bash
+# One-time: install deps
+cd native-host && npm install
+
+# Run (port 9876 must be free — close Claude Code first)
+GEMINI_API_KEY=... node native-host/gemini-grouper.js intent
+GEMINI_API_KEY=... node native-host/gemini-grouper.js context --context "frontend dev, sprint 12"
+GEMINI_API_KEY=... node native-host/gemini-grouper.js priority
+GEMINI_API_KEY=... node native-host/gemini-grouper.js domain
+
+# Or via npm script
+cd native-host && GEMINI_API_KEY=... npm run group -- intent
+```
+
+**Strategies** match the 4 Claude skills: `intent`, `context`, `priority`, `domain`.
+
+**Port conflict:** if port 9876 is in use (Claude Code is running), the script will print an error and exit. Stop Claude Code first.
+
 ## No build step
 
-Pure JavaScript — no transpilation, bundling, or compilation. Dependencies: `ws` (WebSocket) and `@modelcontextprotocol/sdk` (MCP).
+Pure JavaScript — no transpilation, bundling, or compilation. Dependencies: `ws` (WebSocket), `@modelcontextprotocol/sdk` (MCP), `@google/genai` (Gemini).

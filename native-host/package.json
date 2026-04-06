@@ -5,9 +5,12 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "mcp": "node mcp-server.js"
+    "mcp": "node mcp-server.js",
+    "group": "node gemini-grouper.js",
+    "test": "node --env-file=../.env --test gemini-grouper.integration.test.js"
   },
   "dependencies": {
+    "@google/genai": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "ws": "^8.18.0"
   }
